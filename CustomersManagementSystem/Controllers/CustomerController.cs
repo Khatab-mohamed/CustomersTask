@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-
-namespace CustomersManagementSystem.Controllers;
+﻿namespace CustomersManagementSystem.Controllers;
 
 public class CustomerController : Controller
 {
@@ -62,12 +60,14 @@ public class CustomerController : Controller
         pageSize <=0 ? 5:pageSize);
 
         #endregion
+
+        var customersToReturn = _mapper.Map<PaginatedList<CustomerViewModel>>(pagedList);
         return pagedList != null ?
-                      View(pagedList) :
+                      View(customersToReturn) :
                       Problem("No Customers Yet");
     }
 
-    public async Task<IActionResult> ExportExcel(PaginatedList<Customer> customers)
+    public async Task<IActionResult> ExportExcel(PaginatedList<CustomerViewModel> customers)
     {
         if (customers.Count() > 0)
         {
@@ -126,8 +126,8 @@ public class CustomerController : Controller
         {
             return NotFound();
         }
-
-        return View(customer);
+        var customerToReturn = _mapper.Map<CustomerViewModel>(customer);
+        return View(customerToReturn);
     }
 
     // GET: Customer/Create
@@ -143,13 +143,8 @@ public class CustomerController : Controller
     {
         if (ModelState.IsValid)
         {
-            var customerEntity = new Customer
-            {
-                Name = customer.Name,
-                Address = customer.Address,
-                Phone = customer.Phone,
-            };
-            _customerRepository.Add(customerEntity);
+            var customerToAdd = _mapper.Map<Customer>(customer);
+            _customerRepository.Add(customerToAdd);
             await _customerRepository.SaveAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -169,13 +164,14 @@ public class CustomerController : Controller
         {
             return NotFound();
         }
-        return View(customer);
+        var customerToReturn = _mapper.Map<CustomerViewModel>(customer);
+        return View(customerToReturn);
     }
 
     // POST: Customer/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Address,phone")] Customer customer)
+    public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Address,phone")] CustomerViewModel customer)
     {
         if (id != customer.Id)
         {
@@ -184,9 +180,10 @@ public class CustomerController : Controller
 
         if (ModelState.IsValid)
         {
+            var updatedCustomer = _mapper.Map<Customer>(customer);
             try
             {
-                _customerRepository.Update(customer);
+                _customerRepository.Update(updatedCustomer);
                 await _customerRepository.SaveAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -218,9 +215,9 @@ public class CustomerController : Controller
         {
             return NotFound();
         }
-        //var customersToReturn = _mapper.Map<IEnumerable<VM>>(incidents);
+        var customersToReturn = _mapper.Map<CustomerViewModel>(customer);
 
-        return View(customer);
+        return View(customersToReturn);
     }
 
     // POST: Customer/Delete/5
