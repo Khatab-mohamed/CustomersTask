@@ -14,6 +14,9 @@ public class InvoiceViewModel
     [Display(Name = "Total")]
     public decimal Total { get; set; }
 
+    [Display(Name = "Grand Total")]
+    public decimal GrandTotal { get; set; }
+
     [Display(Name = "Already Paid")]
     public bool IsPaid { get; set; }
 

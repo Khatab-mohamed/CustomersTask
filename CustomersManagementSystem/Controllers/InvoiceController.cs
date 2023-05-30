@@ -58,7 +58,8 @@ public class InvoiceController : Controller
         {
            var invoiceToAdd = _mapper.Map<Invoice>(invoice);
             invoiceToAdd.InvoiceDate = DateTime.UtcNow;
-            invoiceToAdd.Total = invoiceToAdd.Price * invoiceToAdd.Discount;
+            invoiceToAdd.Total = invoiceToAdd.Quantity * invoiceToAdd.Price;
+            invoiceToAdd.GrandTotal = invoiceToAdd.Total - ((invoiceToAdd.Total * invoiceToAdd.Discount) / 100);
             _invoiceRepository.Add(invoiceToAdd);
             
             await _invoiceRepository.SaveAsync();

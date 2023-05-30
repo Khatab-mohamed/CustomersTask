@@ -32,11 +32,15 @@
                 @Html.DisplayNameFor(model => model.Total)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.GrandTotal)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.IsPaid)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.InvoiceDate)
             </th>
+            
             <th></th>
         </tr>
     </thead>
@@ -55,7 +59,6 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Price)
             </td>
-
             <td>
                 @Html.DisplayFor(modelItem => item.Discount)
             </td>
@@ -63,9 +66,11 @@
                 @Html.DisplayFor(modelItem => item.Total)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.GrandTotal)
+            </td>
+            <td>
                     @Html.DisplayFor(modelItem => item.IsPaid)
             </td>
-            
             <td>
                 @Html.DisplayFor(modelItem => item.InvoiceDate)
             </td>

@@ -8,7 +8,8 @@ public class InvoiceCreationViewModel
     public string Description { get; set; }
     public int Quantity { get; set; }
     public decimal Price { get; set; }
-    public float Discount { get; set; }
+    [Range(0, 100)]
+    public decimal Discount { get; set; }
     [DisplayName("Customer Name")]
     public Guid CustomerId { get; set; }
 
