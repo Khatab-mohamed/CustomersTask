@@ -8,5 +8,8 @@ public class InvocieProfile : Profile
     {
         CreateMap<InvoiceCreationViewModel, Invoice>()
             .ReverseMap();
+        CreateMap<Invoice,InvoiceViewModel>()
+            .ForMember(c => c.CustomerName, m => m.MapFrom(cvm => cvm.Customer.Name))
+            .ReverseMap();
     }
 }

@@ -14,4 +14,5 @@ public class InvoiceCreationViewModel
 
     [Display(Name = "Already Paid")]
     public bool IsPaid { get; set; }
+  
 }

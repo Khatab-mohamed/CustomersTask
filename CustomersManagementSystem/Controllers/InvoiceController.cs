@@ -1,7 +1,4 @@
-﻿using AutoMapper;
-using CustomersManagementSystem.ViewModels.Invoices;
-
-namespace CustomersManagementSystem.Controllers;
+﻿namespace CustomersManagementSystem.Controllers;
 
 public class InvoiceController : Controller
 {
@@ -23,7 +20,8 @@ public class InvoiceController : Controller
     public async Task<IActionResult> Index()
     {
         var invoices = await _invoiceRepository.GetAsync();
-        return View(invoices);
+        
+        return View(_mapper.Map<IEnumerable<InvoiceViewModel>>(invoices));
     }
 
     // GET: Invoice/Details/5
@@ -54,11 +52,12 @@ public class InvoiceController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Description,Quantity,Price,CustomerId,Discount")] InvoiceCreationViewModel invoice)
+    public async Task<IActionResult> Create([Bind("Description,Quantity,Price,CustomerId,Discount,IsPaid")] InvoiceCreationViewModel invoice)
     {
         if (ModelState.IsValid)
         {
            var invoiceToAdd = _mapper.Map<Invoice>(invoice);
+            invoiceToAdd.InvoiceDate = DateTime.UtcNow;
             invoiceToAdd.Total = invoiceToAdd.Price * invoiceToAdd.Discount;
             _invoiceRepository.Add(invoiceToAdd);
             

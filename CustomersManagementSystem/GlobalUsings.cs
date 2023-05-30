@@ -11,4 +11,6 @@ global using CustomersManagementSystem.ViewModels;
 global using OfficeOpenXml;
 global using CustomersManagementSystem.ViewModels.Invoices;
 global using System.ComponentModel.DataAnnotations;
+global using AutoMapper;
+
 
