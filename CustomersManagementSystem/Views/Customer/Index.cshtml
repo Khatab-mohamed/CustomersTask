@@ -21,15 +21,17 @@
 <table class="table">
     <thead>
         <tr>
+          
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]"> Name</a>
+                @Html.ActionLink("Customer Name", "Index",  new { sortOrder = "Name"})
             </th>
+            
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]"> Adress</a>
+                @Html.ActionLink("Address", "Index",  new { sortOrder = "Address"})
+            </th>
 
-            </th>
             <th>
-                <a asp-action="Index"> Phone</a>
+                <a> Phone</a>
 
             </th>
             <th></th>

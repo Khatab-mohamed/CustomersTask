@@ -23,22 +23,8 @@ public class CustomerController : Controller
         int pageNumber,
         int pageSize)
     {
-        #region Searching
-
-        
-        ViewData["CurrentFilter"] = searchQuery;
-
         var customersViewModel = new CustomerParameters();
-
-        if (!string.IsNullOrEmpty(searchQuery))
-        {
-            customersViewModel.SearchQuery = searchQuery;
-        
-        }
-        #endregion
-
         #region Sorting
-        ViewData["NameSortParm"] = sortOrder;
         
         if (!string.IsNullOrEmpty(sortOrder))
         {
@@ -47,6 +33,21 @@ public class CustomerController : Controller
         }
 
         #endregion
+        #region Searching
+
+
+        ViewData["CurrentFilter"] = searchQuery;
+
+       
+
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            customersViewModel.SearchQuery = searchQuery;
+        
+        }
+        #endregion
+
+     
 
 
         var customersFromDb =  _customerRepository.GetAsync(customersViewModel);
