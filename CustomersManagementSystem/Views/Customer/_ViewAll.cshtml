@@ -1,0 +1,86 @@
+﻿@model PagedList<CustomersManagementSystem.ViewModels.CustomerViewModel>
+<h1>Customers</h1>
+<br />
+<p>
+    <a asp-action="Create" class="btn btn-sm btn-primary">Add Customer</a>
+</p>
+<form asp-action="Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Find : <input type="text" name="searchQuery" value="@ViewData["CurrentFilter"]" />
+            <input type="submit" value="Search" class="btn btn-primary" /> |
+            <a asp-action="Index">Back to Full List</a>         
+        </p>
+    </div>
+</form>
+<table class="table">
+    <thead>
+        <tr>
+          
+            <th>
+                @Html.ActionLink("Customer Name", "Index",  new { sortOrder = "Name"})
+            </th>
+            
+            <th>
+                @Html.ActionLink("Address", "Index",  new { sortOrder = "Address"})
+            </th>
+
+            <th>
+                <a> Phone</a>
+
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Address)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Phone)
+            </td>
+            <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">
+    Previous
+</a>
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+    Next
+</a>
+@using (Html.BeginForm("ExportExcel", "Customer", FormMethod.Post))
+{
+    for (int i = 0; i < Model.Count; i++)
+    {
+        @Html.HiddenFor(m => Model[i].Id)
+        @Html.HiddenFor(m => Model[i].Name)
+        @Html.HiddenFor(m => Model[i].Address)
+        @Html.HiddenFor(m => Model[i].Phone)
+    }
+
+    <input type="submit" value="Send Model" />
+}

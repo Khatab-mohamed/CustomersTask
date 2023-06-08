@@ -20,7 +20,7 @@ public class CustomerController : Controller
     public async Task<IActionResult> Index(
         string sortOrder,
         string searchQuery,
-        int? pageNumber,
+        int? pageIndex,
         int? pageSize)
     {
         var customersResourceParameter = new CustomerParameters();
@@ -64,11 +64,9 @@ public class CustomerController : Controller
         return View(customersViewModel);
 
     }
-    
+    [HttpPost]
     public Task<IActionResult> ExportExcel(PagedList<CustomerViewModel> customers)
     {
-
-        
 
 
        if (customers.Count() > 0)

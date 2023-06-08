@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CustomersManagementSystem.Helpers;
 
 namespace CustomersManagementSystem.Profiles;
 
@@ -13,6 +14,7 @@ public class CustomerProfile : Profile
             .ReverseMap();
 
         CreateMap<CustomerViewModel, Customer>().ReverseMap();
+    
 
     }
 }
