@@ -6,6 +6,7 @@ public class InvoiceViewModel
     public string Description { get; set; }
     public int Quantity { get; set; }
     public decimal Price { get; set; }
+    [Display(Name = "Customer Name")]
     public Guid CustomerId { get; set; }
 
     [Display(Name = "Customer Name")]

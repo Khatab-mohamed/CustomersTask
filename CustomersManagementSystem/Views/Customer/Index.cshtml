@@ -1,4 +1,4 @@
-﻿@model PaginatedList<CustomersManagementSystem.ViewModels.CustomerViewModel>
+﻿@model PagedList<CustomersManagementSystem.ViewModels.CustomerViewModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -59,25 +59,48 @@
     </tbody>
 </table>
 @{
-    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
-    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+    var prevDisabled = !Model.HasPrevious ? "disabled" : "";
+    var nextDisabled = !Model.HasNext ? "disabled" : "";
 }
 
 
-<a asp-action="Index"
-   asp-route-sortOrder="@ViewData["CurrentSort"]"
-   asp-route-pageNumber="@(Model.PageIndex - 1)"
-   asp-route-currentFilter="@ViewData["CurrentFilter"]"
-   class="btn btn-default @prevDisabled">
-    Previous
-</a>
-<a asp-action="Index"
-   asp-route-sortOrder="@ViewData["CurrentSort"]"
-   asp-route-pageNumber="@(Model.PageIndex + 1)"
-   asp-route-currentFilter="@ViewData["CurrentFilter"]"
-   class="btn btn-default @nextDisabled">
-    Next
-</a>
-
+@*<nav>
+    @Html.PagedListPager(Model, pageNumber => Url.Action("index", new { pageNumber = pageNumber }), new PagedListRenderOptions()
+    {
+    ActiveLiElementClass = "active",
+    PageClasses = new[]{ "page-link"},
+    LiElementClasses=new[] { "page-item" },
+    UlElementClasses = new[] { "pagination","justify-content-center", "mt-3" },
+    LinkToNextPageFormat = "Next",
+    LinkToPreviousPageFormat = "Previous",
+    MaximumPageNumbersToDisplay = 5,
+    DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+    DisplayLinkToNextPage = PagedListDisplayMode.Always
+    })
+</nav>
+*@
 <br />
 <a asp-action="ExportExcel" asp-route-customers="@Model" class="btn btn-sm btn-success">Export to Excel</a>
+
+@*<form asp-action="ExportExcel" asp-route-customers="@Model."
+      onsubmit="return exportToExcel(this)" class="d-inline">
+    <input type="submit" value="Export" class="btn btn-sm btn-success" />
+</form>*@
+<script>
+    function exportToExcel() {
+        var customers = @Html.Raw(Json.Serialize(Model.ToList()));
+
+        $.ajax({
+            url: '@Url.Action("ExportExcel", "Customer")',
+            type: 'POST',
+            data: JSON.stringify({ customers: customers }),
+            contentType: 'application/json',
+            success: function (result) {
+                // Handle success response
+            },
+            error: function (error) {
+                // Handle error response
+            }
+        });
+    }
+</script>

@@ -1,0 +1,95 @@
+﻿@model IEnumerable<CustomersManagementSystem.ViewModels.Invoices.InvoiceViewModel>
+
+<div>
+    <table class="table table-responsive" id="view-all">
+        <thead class="thead-light">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.CustomerName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.Discount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Total)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GrandTotal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsPaid)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InvoiceDate)
+            </th>
+            <th>
+                <p>
+                    <a onclick="showInPopup('@Url.Action("AddOrEdit","Invoice",null,Context.Request.Scheme )','New Invoice')"
+                    class="btn btn-success text-white btn-sm">
+                    <i class="fas fa-random"></i> New Invoice</a>
+                </p>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr id="row_@item.Id">
+                <td>
+                    @Html.DisplayFor(modelItem => item.CustomerName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Discount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Total)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GrandTotal)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsPaid)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.InvoiceDate)
+                </td>
+                <td>
+                    <a onclick="showInPopup('@Url.Action("AddOrEdit","Invoice",
+                        new {id=item.Id},Context.Request.Scheme )',
+                        'Edit Invoice')" class="btn btn-sm btn-warning">
+                        Edit
+                    </a>
+            
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Details</a> |
+                        
+                    <form asp-action="Delete" asp-route-id="@item.Id"
+                    onsubmit="return jQueryAjaxDelete(this)" class="d-inline">
+                        <input type="hidden" asp-for="@item.Id" />
+                        <input type="submit" value="Delete" class="btn btn-sm btn-danger" />
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+    </table>
+</div>

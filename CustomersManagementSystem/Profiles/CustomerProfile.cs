@@ -13,5 +13,6 @@ public class CustomerProfile : Profile
             .ReverseMap();
 
         CreateMap<CustomerViewModel, Customer>().ReverseMap();
+
     }
 }

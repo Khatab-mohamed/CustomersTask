@@ -20,15 +20,15 @@ public class CustomerController : Controller
     public async Task<IActionResult> Index(
         string sortOrder,
         string searchQuery,
-        int pageNumber,
-        int pageSize)
+        int? pageNumber,
+        int? pageSize)
     {
-        var customersViewModel = new CustomerParameters();
+        var customersResourceParameter = new CustomerParameters();
         #region Sorting
         
         if (!string.IsNullOrEmpty(sortOrder))
         {
-            customersViewModel.OrderBy = sortOrder;
+            customersResourceParameter.OrderBy = sortOrder;
 
         }
 
@@ -37,12 +37,12 @@ public class CustomerController : Controller
 
 
         ViewData["CurrentFilter"] = searchQuery;
+        ViewData["PageSize"] = pageSize;
 
-       
 
         if (!string.IsNullOrEmpty(searchQuery))
         {
-            customersViewModel.SearchQuery = searchQuery;
+            customersResourceParameter.SearchQuery = searchQuery;
         
         }
         #endregion
@@ -50,29 +50,31 @@ public class CustomerController : Controller
      
 
 
-        var customersFromDb =  _customerRepository.GetAsync(customersViewModel);
- 
-        #region Paging
+        var customersFromDb =  _customerRepository.GetAsync(customersResourceParameter);
+      
+        // Paging
 
 
-        var pagedList = await PaginatedList<Customer>
-            .CreateAsync(customersFromDb.AsNoTracking(),
-        pageNumber <= 0 ? 1:pageNumber,
-        pageSize <=0 ? 5:pageSize);
+        var pagedList = PagedList<Customer>.Create(customersFromDb,
+                customersResourceParameter.PageNumber,
+                customersResourceParameter.PageSize);
 
-        #endregion
+        var customersViewModel = _mapper.Map<PagedList<CustomerViewModel>>(pagedList);
 
-        var customersToReturn = _mapper.Map<PaginatedList<CustomerViewModel>>(pagedList);
-        return pagedList != null ?
-                      View(customersToReturn) :
-                      Problem("No Customers Yet");
+        return View(customersViewModel);
+
     }
-
-    public async Task<IActionResult> ExportExcel(PaginatedList<CustomerViewModel> customers)
+    
+    public Task<IActionResult> ExportExcel(PagedList<CustomerViewModel> customers)
     {
-        if (customers.Count() > 0)
+
+        
+
+
+       if (customers.Count() > 0)
         {
             // Create the Excel package
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             using (var package = new ExcelPackage())
             {
                 // Add a new worksheet
@@ -104,13 +106,13 @@ public class CustomerController : Controller
                 var contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
                 // Return the file as a downloadable attachment
-                return File(fileBytes, contentType, fileName);
+                return Task.FromResult<IActionResult>(File(fileBytes, contentType, fileName));
             }
         }
         else
         {
             TempData["Message"] = "No Data to Export";
-            return View();
+            return Task.FromResult<IActionResult>(View());
         }
     }
 

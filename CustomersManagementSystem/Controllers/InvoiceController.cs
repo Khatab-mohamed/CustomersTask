@@ -20,8 +20,8 @@ public class InvoiceController : Controller
     public async Task<IActionResult> Index()
     {
         var invoices = await _invoiceRepository.GetAsync();
-        
-        return View(_mapper.Map<IEnumerable<InvoiceViewModel>>(invoices));
+        var invoicesToReturn = _mapper.Map<IEnumerable<InvoiceViewModel>>(invoices);
+        return View(invoicesToReturn);
     }
 
     // GET: Invoice/Details/5
@@ -122,6 +122,7 @@ public class InvoiceController : Controller
     }
 
     // GET: Invoice/Delete/5
+
     public async Task<IActionResult> Delete(Guid? id)
     {
         if (id == null || _context.Invoices == null)
@@ -156,7 +157,73 @@ public class InvoiceController : Controller
         }
         
         await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction("index");
+    }
+  
+    public async Task<IActionResult> AddOrEdit(Guid? id)
+    {
+        if (id == null)
+        {
+            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Name");
+            return View(new InvoiceViewModel());
+        }
+        else
+        {
+            //var invoiceFromDb = await _invoiceRepository.IsExistAsync(id);
+            var invoiceFromDb = await _context.Invoices.FindAsync(id);
+            
+            if (invoiceFromDb == null)
+            {
+                return NotFound();
+            }
+            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Name");
+            var invoiceViewModel = _mapper.Map<InvoiceViewModel>(invoiceFromDb);
+            return View(invoiceViewModel);
+        }
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddOrEdit(Guid id, [Bind("Description,Quantity,Price,CustomerId,Discount,IsPaid")]
+    InvoiceCreationViewModel invoiceViewModel)
+    {
+        if (ModelState.IsValid)
+        {
+            //Insert
+            if (id == Guid.Empty)
+            {
+                var invoiceToAdd = _mapper.Map<Invoice>(invoiceViewModel);
+                invoiceToAdd.InvoiceDate = DateTime.UtcNow;
+                invoiceToAdd.Total = invoiceToAdd.Quantity * invoiceToAdd.Price;
+                invoiceToAdd.GrandTotal = invoiceToAdd.Total - ((invoiceToAdd.Total * invoiceToAdd.Discount) / 100);
+                _invoiceRepository.Add(invoiceToAdd);
+
+                await _invoiceRepository.SaveAsync();
+            }
+            //Update
+            else
+            {
+                try
+                {
+                    var invoiceToEdit = _mapper.Map<Invoice>(invoiceViewModel);
+                    invoiceToEdit.Id = id;
+                    _invoiceRepository.Update(invoiceToEdit);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                   /* if (!TransactionModelExists(invoiceViewModel.TransactionId))
+                    { return NotFound(); }
+                    else
+                    { throw; }*/ 
+                }
+            }
+            var invoices = await _invoiceRepository.GetAsync();
+
+            var invoicesToReturn = _mapper.Map<IEnumerable<InvoiceViewModel>>(invoices);
+
+            return RedirectToAction("index");
+        }
+        return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "AddOrEdit", invoiceViewModel) });
+    }
 }

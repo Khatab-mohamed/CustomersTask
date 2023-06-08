@@ -42,7 +42,7 @@ public class InvoiceRepository : IInvoiceRepository
 
     public void Update(Invoice invoice)
     {
-        _context.Invoices.Attach(invoice);
+        _context.Invoices.Update(invoice);
     }
 
     public async Task<bool> SaveAsync()
