@@ -1,4 +1,7 @@
-﻿namespace CustomersManagementSystem.Controllers;
+﻿using CustomersManagementSystem.ViewModels.Invoices;
+using Microsoft.EntityFrameworkCore;
+
+namespace CustomersManagementSystem.Controllers;
 
 public class CustomerController : Controller
 {
@@ -153,13 +156,17 @@ public class CustomerController : Controller
     }
 
     // GET: Customer/Edit/5
-    public async Task<IActionResult> Edit(Guid id)
+    public async Task<IActionResult> CustomerForm(Guid? id)
     {
+        if (id == null)
+        {
+          
+            return View(new CustomerViewModel());
+        }
         if (!await _customerRepository.IsExistAsync(id))
         {
             return NotFound();
         }
-
         var customer = await _customerRepository.GetAsync(id);
         if (customer == null)
         {
@@ -172,35 +179,45 @@ public class CustomerController : Controller
     // POST: Customer/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Address,phone")] CustomerViewModel customer)
+    public async Task<IActionResult> CustomerForm(Guid id, [Bind("Id,Name,Address,Phone")] CustomerViewModel customer)
     {
-        if (id != customer.Id)
-        {
-            return NotFound();
-        }
-
         if (ModelState.IsValid)
         {
-            var updatedCustomer = _mapper.Map<Customer>(customer);
-            try
+            //Insert
+            if (id == Guid.Empty)
             {
-                _customerRepository.Update(updatedCustomer);
+                var customerToAdd = _mapper.Map<Customer>(customer);
+             
+                _customerRepository.Add(customerToAdd);
+
                 await _customerRepository.SaveAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            //Update
+            else
             {
-                if (! await _customerRepository.IsExistAsync(id))
+                try
                 {
-                    return NotFound();
+                    var customerToEdit = _mapper.Map<Customer>(customer);
+                    customerToEdit.Id = id;
+                    _customerRepository.Update(customerToEdit);
+                    await _customerRepository.SaveAsync();
                 }
-                else
+                catch (DbUpdateConcurrencyException)
                 {
-                    throw;
+                    /* if (!TransactionModelExists(invoiceViewModel.TransactionId))
+                     { return NotFound(); }
+                     else
+                     { throw; }*/
                 }
             }
-            return RedirectToAction(nameof(Index));
+            //var invoices =   _customerRepository.GetAsync();
+
+            //var invoicesToReturn = _mapper.Map<IEnumerable<InvoiceViewModel>>(invoices);
+
+            return RedirectToAction("index");
         }
-        return View(customer);
+        return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "CustomerForm", customer) });
+        
     }
 
     // GET: Customer/Delete/5

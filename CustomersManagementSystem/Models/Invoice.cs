@@ -1,6 +1,5 @@
 ﻿namespace CustomersManagementSystem.Models;
 
-// Invoice model
 public class Invoice
 {
    

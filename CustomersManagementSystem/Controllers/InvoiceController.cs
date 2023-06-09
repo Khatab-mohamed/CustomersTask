@@ -85,42 +85,7 @@ public class InvoiceController : Controller
         ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Name", invoice.CustomerId);
         return View(invoice);
     }
-
-    // POST: Invoice/Edit/5
-    
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("Id,Description,Quantity,Price,CustomerId,Discount,Total")] InvoiceViewModel invoice)
-    {
-        if (id != invoice.Id)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(invoice);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!await _invoiceRepository.IsExistAsync(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
-        }
-        ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Name", invoice.CustomerId);
-        return View(invoice);
-    }
-
+   
     // GET: Invoice/Delete/5
 
     public async Task<IActionResult> Delete(Guid? id)
@@ -184,7 +149,7 @@ public class InvoiceController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AddOrEdit(Guid id, [Bind("Description,Quantity,Price,CustomerId,Discount,IsPaid")]
+    public async Task<IActionResult> AddOrEdit(Guid id, [Bind("Description,Quantity,Price,CustomerId,Discount")]
     InvoiceCreationViewModel invoiceViewModel)
     {
         if (ModelState.IsValid)
@@ -207,6 +172,8 @@ public class InvoiceController : Controller
                 {
                     var invoiceToEdit = _mapper.Map<Invoice>(invoiceViewModel);
                     invoiceToEdit.Id = id;
+                    invoiceToEdit.Total = invoiceToEdit.Quantity * invoiceToEdit.Price;
+                    invoiceToEdit.GrandTotal = invoiceToEdit.Total - ((invoiceToEdit.Total * invoiceToEdit.Discount) / 100);
                     _invoiceRepository.Update(invoiceToEdit);
                     await _context.SaveChangesAsync();
                 }
@@ -218,9 +185,9 @@ public class InvoiceController : Controller
                     { throw; }*/ 
                 }
             }
-            var invoices = await _invoiceRepository.GetAsync();
+            //var invoices = await _invoiceRepository.GetAsync();
 
-            var invoicesToReturn = _mapper.Map<IEnumerable<InvoiceViewModel>>(invoices);
+            //var invoicesToReturn = _mapper.Map<IEnumerable<InvoiceViewModel>>(invoices);
 
             return RedirectToAction("index");
         }

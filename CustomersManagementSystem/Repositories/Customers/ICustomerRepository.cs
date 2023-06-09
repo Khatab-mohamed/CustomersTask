@@ -4,8 +4,8 @@ namespace CustomersManagementSystem.Repositories.Customers;
 
 public interface ICustomerRepository
 {
-    Task<bool> IsExistAsync(Guid customerId);
-    Task<Customer?> GetAsync(Guid customerId);
+    Task<bool> IsExistAsync(Guid? customerId);
+    Task<Customer?> GetAsync(Guid? customerId);
     IQueryable<Customer> GetAsync(CustomerParameters customer);
 
     void Add(Customer customer);

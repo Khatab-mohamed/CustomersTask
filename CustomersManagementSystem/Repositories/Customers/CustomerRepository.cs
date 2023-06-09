@@ -10,7 +10,7 @@ public class CustomerRepository : ICustomerRepository
 
     #endregion
 
-    public async Task<bool> IsExistAsync(Guid customerId)
+    public async Task<bool> IsExistAsync(Guid? customerId)
     {
         return await _context.Customers.AnyAsync(c => c.Id == customerId);
     }
@@ -27,7 +27,7 @@ public class CustomerRepository : ICustomerRepository
         if (customer != null) _context.Customers.Remove(customer);
     }
 
-    public async Task<Customer?> GetAsync(Guid customerId)
+    public async Task<Customer?> GetAsync(Guid? customerId)
     {
         var entity = await _context.Customers.FindAsync(customerId);
         return entity;
@@ -67,7 +67,7 @@ public class CustomerRepository : ICustomerRepository
 
     public void Update(Customer customer)
     {
-        _context.Customers.Attach(customer);
+        _context.Customers.Update(customer);
     }
 
     public async Task<bool> SaveAsync()
